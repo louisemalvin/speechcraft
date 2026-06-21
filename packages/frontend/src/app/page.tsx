@@ -9,12 +9,22 @@ import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { SegmentCard } from '@/components/SegmentCard';
 
+const FONT_SIZES = ['sm', 'md', 'lg', 'xl', '2xl'] as const;
+const FONT_SIZE_MAP: Record<string, string> = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
+  xl: 'text-xl',
+  '2xl': 'text-2xl',
+};
+
 export default function Home() {
   const [segments, setSegments] = useState<TranslationSegment[]>([]);
   const [ttsEnabled, setTtsEnabled] = useState(false);
   const [autoScroll, setAutoScroll] = useState(true);
   const [connected, setConnected] = useState(false);
   const [showGreeting, setShowGreeting] = useState(false);
+  const [fontSize, setFontSize] = useState('md');
 
   const ttsRef = useRef<TextToSpeechService>(new TextToSpeechService());
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -115,13 +125,13 @@ export default function Home() {
                 </Card>
               </div>
             )}
-            <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 scroll-smooth">
+            <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 scroll-smooth pb-14">
               {segments.map((seg, idx) => (
-                <SegmentCard key={seg.sequence_number} segment={seg} isLatest={idx === segments.length - 1} fontSizeClass="text-base" />
+                <SegmentCard key={seg.sequence_number} segment={seg} isLatest={idx === segments.length - 1} fontSizeClass={FONT_SIZE_MAP[fontSize]} />
               ))}
             </div>
             {!autoScroll && (
-              <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
+              <div className="absolute bottom-16 left-0 right-0 flex justify-center pointer-events-none">
                 <Button
                   variant="primary"
                   size="md"
@@ -136,6 +146,23 @@ export default function Home() {
             )}
           </>
         )}
+
+        {/* Font size toolbar */}
+        <div className="absolute bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 px-4 py-2 flex items-center justify-center gap-1.5">
+          {FONT_SIZES.map((size) => (
+            <button
+              key={size}
+              onClick={() => setFontSize(size)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                fontSize === size
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+              }`}
+            >
+              {size.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </main>
     </div>
   );
