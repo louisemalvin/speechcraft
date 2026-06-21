@@ -51,12 +51,6 @@ export default function SpeakerPage() {
     setPinInput('');
   };
 
-  const handleDownloadBackup = () => {
-    // TODO: Open IndexedDB "SermonAudioBackup", compile all chunks from "audio_chunks"
-    // object store into a single blob, trigger browser download.
-    alert("Backup download initiated. (Stub handler logic executes - full logic deferred as per task spec)");
-  };
-
   // Avoid rendering during SSR/hydration to prevent mismatches
   if (!isMounted) {
     return (
@@ -290,16 +284,6 @@ export default function SpeakerPage() {
 
         {/* Action Controls */}
         <div className="pt-4 border-t border-slate-900 flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={handleDownloadBackup}
-            className="flex-1 min-h-[48px] bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-medium px-4 py-2.5 rounded-xl text-sm transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Download Backup Audio
-          </button>
-
           <button
             onClick={handleLock}
             className="min-h-[48px] sm:w-auto px-6 bg-slate-950 border border-slate-800 hover:bg-slate-900 text-slate-400 hover:text-slate-300 font-medium rounded-xl text-sm transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"

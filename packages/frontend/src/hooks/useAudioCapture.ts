@@ -37,7 +37,6 @@ export function useAudioCapture(sermonId: string): UseAudioCaptureResult {
 
       // 3. Instantiate and run orchestrator with text capture handler
       orchestratorRef.current = new AudioOrchestrator(
-        sermonId,
         providerType,
         { apiKey: deepgramKey },
         async (rawText) => {
