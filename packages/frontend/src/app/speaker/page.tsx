@@ -8,6 +8,7 @@ export default function SpeakerPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState<string | null>(null);
+  const [rememberDevice, setRememberDevice] = useState(false);
 
   // Keep sermon ID stable across re-renders
   const sermonIdRef = useRef(Date.now().toString());
@@ -25,8 +26,10 @@ export default function SpeakerPage() {
   // Check authentication status on mount to avoid SSR mismatches
   useEffect(() => {
     setIsMounted(true);
-    const existingPin = sessionStorage.getItem('speaker_pin');
+    const existingPin = sessionStorage.getItem('speaker_pin') || localStorage.getItem('speaker_pin');
     if (existingPin) {
+      // Restore to sessionStorage so the hook can read it
+      sessionStorage.setItem('speaker_pin', existingPin);
       setIsAuthenticated(true);
     }
   }, []);
@@ -38,6 +41,9 @@ export default function SpeakerPage() {
       return;
     }
     sessionStorage.setItem('speaker_pin', pinInput);
+    if (rememberDevice) {
+      localStorage.setItem('speaker_pin', pinInput);
+    }
     setIsAuthenticated(true);
     setPinError(null);
   };
@@ -47,6 +53,7 @@ export default function SpeakerPage() {
       stop();
     }
     sessionStorage.removeItem('speaker_pin');
+    localStorage.removeItem('speaker_pin');
     setIsAuthenticated(false);
     setPinInput('');
   };
@@ -103,6 +110,18 @@ export default function SpeakerPage() {
                 </p>
               )}
             </div>
+
+            <label className="flex items-center gap-2.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={rememberDevice}
+                onChange={(e) => setRememberDevice(e.target.checked)}
+                className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-500 focus:ring-indigo-500/30 focus:ring-offset-0 cursor-pointer"
+              />
+              <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+                Remember this device
+              </span>
+            </label>
 
             <button
               type="submit"
