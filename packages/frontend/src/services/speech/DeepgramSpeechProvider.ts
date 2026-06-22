@@ -8,6 +8,7 @@ export class DeepgramSpeechProvider implements SpeechToTextProvider {
   private workletNode: AudioWorkletNode | null = null;
   private source: MediaStreamAudioSourceNode | null = null;
   private keepAliveInterval: ReturnType<typeof setInterval> | null = null;
+  private lastActiveTime = 0;
 
   constructor(private token: string) {}
 
@@ -41,6 +42,26 @@ export class DeepgramSpeechProvider implements SpeechToTextProvider {
             this.workletNode = new AudioWorkletNode(this.audioContext, 'audio-processor');
             this.workletNode.port.onmessage = (event) => {
               if (this.socket?.readyState !== WebSocket.OPEN) return;
+
+              const pcmData = new Int16Array(event.data);
+              let sum = 0;
+              for (let i = 0; i < pcmData.length; i++) {
+                sum += Math.abs(pcmData[i]);
+              }
+              const avgAmplitude = sum / pcmData.length;
+
+              const SILENCE_THRESHOLD = 150;
+              const HANGOVER_MS = 500;
+              const now = Date.now();
+
+              if (avgAmplitude >= SILENCE_THRESHOLD) {
+                this.lastActiveTime = now;
+              }
+
+              if (now - this.lastActiveTime > HANGOVER_MS) {
+                return;
+              }
+
               this.socket.send(event.data);
             };
 

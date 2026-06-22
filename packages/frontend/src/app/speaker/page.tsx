@@ -44,6 +44,31 @@ export default function SpeakerPage() {
     if (isListening) stop();
   };
 
+  const getStatusBadge = () => {
+    if (!isListening) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full bg-surface-secondary border border-surface-border/50 text-text-secondary">
+          <span className="w-1.5 h-1.5 rounded-full bg-text-muted" />
+          Off
+        </span>
+      );
+    }
+    if (volume < 5) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          Gated (Free)
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full bg-status-live/10 border border-status-live/30 text-status-live animate-pulse">
+        <span className="w-1.5 h-1.5 rounded-full bg-status-live" />
+        Streaming
+      </span>
+    );
+  };
+
   if (!isMounted) return <LoadingSpinner label="Loading console..." />;
 
   if (!isAuthenticated) return (
@@ -59,6 +84,10 @@ export default function SpeakerPage() {
 
   return (
     <main className="min-h-screen bg-surface-primary text-text-primary flex flex-col items-center justify-center p-6 md:p-8 font-sans">
+      <div className="mb-6 flex justify-center">
+        {getStatusBadge()}
+      </div>
+
       <div className="flex items-center justify-center mb-8">
         <BroadcastButton
           isListening={isListening}
@@ -76,7 +105,7 @@ export default function SpeakerPage() {
           </span>
           <span className="font-mono">{isListening ? volume : 0}%</span>
         </div>
-        <VuMeter volume={isListening ? volume : 0} isActive={isListening} />
+        <VuMeter volume={isListening ? volume : 0} isActive={isListening} threshold={5} />
       </div>
 
       {error && (
