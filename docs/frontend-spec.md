@@ -4,10 +4,10 @@ This document specifies the user interface design, routing structure, browser We
 
 ## Routing & Layout Structure
 
-The Next.js application defines two core visual states:
+The Next.js application defines three core routes:
 - `/` - Viewer Console (Public congregation live translation scrolling feed).
-- `/speaker` - Speaker Console (PIN gate, microphone capture, wake lock, and real-time broadcasting - zero configuration).
-- `/admin` - Admin Console (PIN gate, ASR provider selection, and API key configuration).
+- `/speaker` - Speaker Console (PIN gate, microphone capture, screen wake lock, and real-time voice broadcast).
+- `/admin` - Developer Debug Console (PIN gate, live segments streamed counter, and a real-time ASR/translation debug feed).
 
 ---
 
@@ -375,10 +375,12 @@ In compliance with our rich styling guidelines, the application features a premi
   - Connection Indicator: Glowing status light (Green for active websocket broadcast, Red for disconnected/inactive).
 
 ### 3. Admin Console (`/admin`)
-- **PIN Gate Screen**: Simple entry to input the session PIN before launching the interface.
-- **ASR & API Configuration**:
-  - ASR Provider Selector: Select active engine (Deepgram vs Web Speech API).
-  - API Key Field: Input field to save the Deepgram API Key safely in browser `localStorage`.
+- **PIN Gate Screen**: Simple entry to input the session PIN before launching the debugger.
+- **Developer Debug Feed**:
+  - Displays incoming broadcast segments in real-time, showing Sequence Number, Timestamp, Raw ASR (Indonesian) text, and Translated (English) text side-by-side.
+  - Interactive controls to clear the logs feed.
+  - Connection status indicator showing connection to the `sermon-live` Supabase Realtime channel.
+  - Navigation panel to jump directly to `/speaker` or `/` interfaces.
 
 
 
