@@ -85,7 +85,7 @@ export default function AdminPage() {
 
         {/* Info & Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-shrink-0">
-          <Card variant="default" className="bg-surface-secondary/40 border border-surface-border/60 backdrop-blur-md rounded-xl p-4 flex items-center justify-between">
+          <Card variant="default" className="backdrop-blur-md rounded-xl p-4 flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider block">Realtime Broadcast</span>
               <span className="text-sm font-bold text-text-primary mt-1 block">sermon-live</span>
@@ -98,7 +98,7 @@ export default function AdminPage() {
             />
           </Card>
 
-          <Card variant="default" className="bg-surface-secondary/40 border border-surface-border/60 backdrop-blur-md rounded-xl p-4 flex items-center justify-between">
+          <Card variant="default" className="backdrop-blur-md rounded-xl p-4 flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider block">Total Segments Streamed</span>
               <span className="text-2xl font-mono font-bold text-accent mt-0.5 block">{logs.length}</span>
@@ -108,14 +108,14 @@ export default function AdminPage() {
             </div>
           </Card>
 
-          <Card variant="default" className="bg-surface-secondary/40 border border-surface-border/60 backdrop-blur-md rounded-xl p-4 flex items-center justify-between">
+          <Card variant="default" className="backdrop-blur-md rounded-xl p-4 flex items-center justify-between">
             <div>
               <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider block">Console Navigation</span>
               <div className="flex gap-2 mt-1.5">
-                <Link href="/speaker" className="px-3 py-1.5 min-h-[44px] flex items-center justify-center bg-surface-secondary hover:bg-surface-tertiary border border-surface-border rounded-lg text-xs font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary transition-colors">
+                <Link href="/speaker" className="px-3 py-1.5 min-h-[44px] flex items-center justify-center bg-surface-tertiary hover:bg-surface-muted border border-surface-border/50 rounded-lg text-xs font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary transition-colors">
                   Speaker
                 </Link>
-                <Link href="/" className="px-3 py-1.5 min-h-[44px] flex items-center justify-center bg-surface-secondary hover:bg-surface-tertiary border border-surface-border rounded-lg text-xs font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary transition-colors">
+                <Link href="/" className="px-3 py-1.5 min-h-[44px] flex items-center justify-center bg-surface-tertiary hover:bg-surface-muted border border-surface-border/50 rounded-lg text-xs font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary transition-colors">
                   Viewer
                 </Link>
               </div>
@@ -124,7 +124,7 @@ export default function AdminPage() {
         </div>
 
         {/* Debug Logs Terminal Grid */}
-        <Card variant="default" className="flex-1 bg-surface-secondary/40 border border-surface-border/60 backdrop-blur-md rounded-2xl p-6 shadow-2xl flex flex-col min-h-[400px]">
+        <Card variant="default" className="flex-1 backdrop-blur-md rounded-2xl p-6 shadow-2xl flex flex-col min-h-[400px]">
           <div className="flex justify-between items-center pb-4 border-b border-surface-border flex-shrink-0">
             <h2 className="text-base font-semibold text-text-primary flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse" />
@@ -159,7 +159,7 @@ export default function AdminPage() {
                 {logs.map((log) => (
                   <div 
                     key={log.sequence_number} 
-                    className="p-4 rounded-xl bg-surface-primary/80 border border-surface-border/80 hover:border-surface-border transition-colors flex flex-col md:flex-row gap-4"
+                    className="p-4 rounded-xl bg-surface-tertiary/50 border border-surface-border/40 hover:border-surface-border/80 transition-colors flex flex-col md:flex-row gap-4"
                   >
                     {/* Log metadata */}
                     <div className="flex md:flex-col justify-between md:justify-start items-center md:items-start gap-1.5 flex-shrink-0 md:w-32 border-b md:border-b-0 md:border-r border-surface-border/80 pb-2 md:pb-0 md:pr-4">
