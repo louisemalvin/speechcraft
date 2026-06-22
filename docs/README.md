@@ -24,9 +24,11 @@ Refer to these documents for detailed analyses of specific system modules:
     *   Maps step-by-step journeys and mental models for Speakers, Viewers, and Administrators.
 7.  **[System Performance](performance.md)**
     *   Covers latency breakdown, reconnect behaviors, error handling, and browser-native optimizations.
-8.  **[Translation Glossary](glossary.md)**
+8.  **[Design Language](design.md)**
+    *   Brand identity, color system, typography, component patterns, and accessibility guidelines.
+9.  **[Translation Glossary](glossary.md)**
     *   Provides term dictionaries and the context lookup translation strategy.
-9.  **[Project Roadmap](roadmap.md)**
+10. **[Project Roadmap](roadmap.md)**
     *   Examines future development targets including multi-language selection, deep-link onboarding, and analytics metrics.
 
 ---

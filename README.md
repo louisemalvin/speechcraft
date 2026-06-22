@@ -128,5 +128,6 @@ Explore detailed guides on each system component:
 *   **[Security & Privacy](docs/security.md)**: Brute-force protections, rate limiting, and client authentication tokens.
 *   **[User Journeys](docs/user-journeys.md)**: Detailed step-by-step user paths for Speakers, Viewers, and Administrators.
 *   **[System Performance](docs/performance.md)**: Reconnect behaviours, failover conditions, and network benchmarks.
+*   **[Design Language](docs/design.md)**: Brand identity, color tokens, component patterns, and accessibility guidelines.
 *   **[Translation Glossary](docs/glossary.md)**: Detailed Indonesian-to-English glossary settings.
 *   **[Project Roadmap](docs/roadmap.md)**: Future ideas, multi-language planning, and analytical milestones.
