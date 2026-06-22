@@ -30,11 +30,14 @@ export default function Home() {
   const ttsRef = useRef<TextToSpeechService>(new TextToSpeechService());
   const prevSegmentsLengthRef = useRef(0);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const seenSeqRef = useRef(new Set<number>());
 
   // Subscription
   useEffect(() => {
     const currentTts = ttsRef.current;
     const unsubscribe = subscribeToLiveSermon((segment: TranslationSegment) => {
+      if (seenSeqRef.current.has(segment.sequence_number)) return;
+      seenSeqRef.current.add(segment.sequence_number);
       setSegments((prev) => [...prev, segment]);
     });
 

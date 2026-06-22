@@ -27,6 +27,7 @@ export function useAudioCapture(): UseAudioCaptureResult {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const accumulationBufferRef = useRef<string[]>([]);
   const accumulationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sendingRef = useRef(false);
 
   const start = async () => {
     try {
@@ -66,12 +67,18 @@ export function useAudioCapture(): UseAudioCaptureResult {
           accumulationTimerRef.current = null;
         }
 
+        if (sendingRef.current) return;
+
         const buffer = accumulationBufferRef.current;
         if (buffer.length === 0) return;
         const joined = buffer.join(' ');
 
-        // Clear buffer BEFORE the async call to prevent re-entrance
         accumulationBufferRef.current = [];
+
+        const seq = sequenceRef.current;
+        sequenceRef.current += 1;
+
+        sendingRef.current = true;
 
         setLatestTranscribedText(joined);
 
@@ -80,7 +87,7 @@ export function useAudioCapture(): UseAudioCaptureResult {
             body: {
               raw_text: joined,
               history: historyRef.current,
-              sequence_number: sequenceRef.current,
+              sequence_number: seq,
             },
             headers: {
               'x-admin-pin': pin,
@@ -101,11 +108,15 @@ export function useAudioCapture(): UseAudioCaptureResult {
           const updatedHistory = [...historyRef.current, { raw: joined, translated: translatedText }];
           if (updatedHistory.length > MAX_HISTORY_WINDOW) updatedHistory.shift();
           historyRef.current = updatedHistory;
-
-          sequenceRef.current += 1;
         } catch (apiErr: unknown) {
           const errMsg = apiErr instanceof Error ? apiErr.message : String(apiErr);
           setError(`Translation failed: ${errMsg}`);
+        } finally {
+          sendingRef.current = false;
+
+          if (accumulationBufferRef.current.length > 0) {
+            void flushBuffer();
+          }
         }
       };
 
