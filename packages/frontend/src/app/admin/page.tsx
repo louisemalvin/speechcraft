@@ -50,6 +50,34 @@ export default function AdminPage() {
     setLogs([]);
   };
 
+  const downloadLogs = () => {
+    const enrichedLogs = logs.map(log => ({
+      sequence_number: log.sequence_number,
+      timestamp: new Date(log.timestamp).toISOString(),
+      raw_text: log.raw_text,
+      translated_text: log.translated_text,
+      timings: {
+        audio_start_time: log.audio_start_time ? new Date(log.audio_start_time).toISOString() : null,
+        stt_received_time: log.stt_received_time ? new Date(log.stt_received_time).toISOString() : null,
+        deepseek_start_time: log.deepseek_start_time ? new Date(log.deepseek_start_time).toISOString() : null,
+        deepseek_received_time: log.deepseek_received_time ? new Date(log.deepseek_received_time).toISOString() : null,
+        stt_latency_ms: log.stt_received_time && log.audio_start_time ? log.stt_received_time - log.audio_start_time : null,
+        deepseek_latency_ms: log.deepseek_received_time && log.deepseek_start_time ? log.deepseek_received_time - log.deepseek_start_time : null,
+        total_latency_ms: log.deepseek_received_time && log.audio_start_time ? log.deepseek_received_time - log.audio_start_time : null,
+      }
+    }));
+
+    const blob = new Blob([JSON.stringify(enrichedLogs, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `translation_logs_${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   if (!isMounted) return <LoadingSpinner label="Loading debugger..." />;
 
   if (!isAuthenticated) return (
@@ -130,16 +158,32 @@ export default function AdminPage() {
               <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse" />
               Live Debug Log Feed
             </h2>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={clearLogs}
-              className="text-xs !min-h-0 h-8 font-semibold"
-              disabled={logs.length === 0}
-              iconLeft={<Icon name="Close" className="w-3.5 h-3.5" />}
-            >
-              Clear Feed
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={downloadLogs}
+                className="text-xs !min-h-0 h-8 font-semibold"
+                disabled={logs.length === 0}
+                iconLeft={
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                }
+              >
+                Download Logs
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={clearLogs}
+                className="text-xs !min-h-0 h-8 font-semibold"
+                disabled={logs.length === 0}
+                iconLeft={<Icon name="Close" className="w-3.5 h-3.5" />}
+              >
+                Clear Feed
+              </Button>
+            </div>
           </div>
 
           {/* Logs Container */}
@@ -171,16 +215,42 @@ export default function AdminPage() {
                       </span>
                     </div>
 
-                    {/* Texts comparison */}
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-[10px] uppercase font-bold tracking-wider text-text-secondary block mb-1">Raw ASR (Indonesian)</span>
-                        <p className="text-sm text-text-primary leading-relaxed font-sans">{log.raw_text}</p>
+                    {/* Main Area */}
+                    <div className="flex-1 flex flex-col gap-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-text-secondary block mb-1">Raw ASR (Indonesian)</span>
+                          <p className="text-sm text-text-primary leading-relaxed font-sans">{log.raw_text}</p>
+                        </div>
+                        <div className="border-t md:border-t-0 md:border-l border-surface-border/50 pt-3 md:pt-0 md:pl-4">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-accent block mb-1">Translation (English)</span>
+                          <p className="text-sm text-text-primary leading-relaxed font-sans font-medium">{log.translated_text}</p>
+                        </div>
                       </div>
-                      <div className="border-t md:border-t-0 md:border-l border-surface-border/50 pt-3 md:pt-0 md:pl-4">
-                        <span className="text-[10px] uppercase font-bold tracking-wider text-accent block mb-1">Translation (English)</span>
-                        <p className="text-sm text-text-primary leading-relaxed font-sans font-medium">{log.translated_text}</p>
-                      </div>
+
+                      {/* Timings */}
+                      {(log.audio_start_time || log.deepseek_start_time) && (
+                        <div className="mt-2 pt-2 border-t border-surface-border/20 flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-text-muted font-mono">
+                          {log.stt_received_time && log.audio_start_time && (
+                            <span className="flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-text-muted/60" />
+                              ASR Input: <span className="text-text-secondary font-bold">{log.stt_received_time - log.audio_start_time}ms</span>
+                            </span>
+                          )}
+                          {log.deepseek_received_time && log.deepseek_start_time && (
+                            <span className="flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-text-muted/60" />
+                              DeepSeek API: <span className="text-text-secondary font-bold">{log.deepseek_received_time - log.deepseek_start_time}ms</span>
+                            </span>
+                          )}
+                          {log.deepseek_received_time && log.audio_start_time && (
+                            <span className="flex items-center gap-1 bg-accent/5 px-1.5 py-0.5 rounded border border-accent/10">
+                              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                              Total Latency: <span className="text-accent font-bold">{log.deepseek_received_time - log.audio_start_time}ms</span>
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

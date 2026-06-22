@@ -28,10 +28,12 @@ export function useAudioCapture(): UseAudioCaptureResult {
   const accumulationBufferRef = useRef<string[]>([]);
   const accumulationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sendingRef = useRef(false);
+  const segmentStartTimestampRef = useRef<number | null>(null);
 
   const start = async () => {
     try {
       setError(null);
+      segmentStartTimestampRef.current = Date.now();
 
       // 1. Fetch Speaker configuration (PIN and active ASR provider choice)
       const pin = sessionStorage.getItem('speaker_pin') || '';
@@ -73,7 +75,11 @@ export function useAudioCapture(): UseAudioCaptureResult {
         if (buffer.length === 0) return;
         const joined = buffer.join(' ');
 
+        const audioStartTime = segmentStartTimestampRef.current || Date.now();
+        const sttReceivedTime = Date.now();
+
         accumulationBufferRef.current = [];
+        segmentStartTimestampRef.current = Date.now();
 
         const seq = sequenceRef.current;
         sequenceRef.current += 1;
@@ -88,6 +94,8 @@ export function useAudioCapture(): UseAudioCaptureResult {
               raw_text: joined,
               history: historyRef.current,
               sequence_number: seq,
+              audio_start_time: audioStartTime,
+              stt_received_time: sttReceivedTime,
             },
             headers: {
               'x-admin-pin': pin,
@@ -176,7 +184,11 @@ export function useAudioCapture(): UseAudioCaptureResult {
       }
 
       const accumulatedText = accumulationBufferRef.current.join(' ');
+      const audioStartTime = segmentStartTimestampRef.current || Date.now();
+      const sttReceivedTime = Date.now();
+
       accumulationBufferRef.current = [];
+      segmentStartTimestampRef.current = null;
 
       setLatestTranscribedText(accumulatedText);
 
@@ -187,6 +199,8 @@ export function useAudioCapture(): UseAudioCaptureResult {
             raw_text: accumulatedText,
             history: historyRef.current,
             sequence_number: sequenceRef.current,
+            audio_start_time: audioStartTime,
+            stt_received_time: sttReceivedTime,
           },
           headers: { 'x-admin-pin': pin },
         });

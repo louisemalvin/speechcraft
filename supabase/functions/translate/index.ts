@@ -240,7 +240,7 @@ serve(async (req) => {
       });
     }
 
-    const { raw_text, history = [], sequence_number } = body;
+    const { raw_text, history = [], sequence_number, audio_start_time, stt_received_time } = body;
     if (!raw_text) {
       return new Response(JSON.stringify({ error: "Missing raw_text" }), {
         status: 400,
@@ -268,6 +268,8 @@ serve(async (req) => {
     }
     const apiUrl = Deno.env.get("DEEPSEEK_API_URL") || "https://api.deepseek.com/v1";
 
+    const deepseek_start_time = Date.now();
+
     const dsResponse = await fetch(`${apiUrl}/chat/completions`, {
       method: "POST",
       headers: {
@@ -288,6 +290,7 @@ serve(async (req) => {
     }
 
     const dsData = await dsResponse.json();
+    const deepseek_received_time = Date.now();
     const responseContent = dsData.choices?.[0]?.message?.content;
     if (!responseContent) {
       throw new Error("Empty or invalid response from DeepSeek API");
@@ -318,6 +321,10 @@ serve(async (req) => {
                   raw_text,
                   translated_text,
                   timestamp: Date.now(),
+                  audio_start_time,
+                  stt_received_time,
+                  deepseek_start_time,
+                  deepseek_received_time,
                 },
               });
               resolve();
@@ -340,7 +347,13 @@ serve(async (req) => {
       console.warn("Skipping Realtime broadcast: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not configured");
     }
 
-    return new Response(JSON.stringify({ translated_text }), {
+    return new Response(JSON.stringify({
+      translated_text,
+      audio_start_time,
+      stt_received_time,
+      deepseek_start_time,
+      deepseek_received_time
+    }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
