@@ -1,12 +1,12 @@
 {
-  "name": "Sermon Translator",
-  "short_name": "Sermons",
-  "description": "Real-time sermon translation console",
+  "name": "Speechcraft",
+  "short_name": "Speechcraft",
+  "description": "Real-time translation console",
   "start_url": "/speaker",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#0f172a",
-  "background_color": "#020617",
+  "theme_color": "#E8E0D4",
+  "background_color": "#E8E0D4",
   "icons": [
     {
       "src": "/icon-192.png",

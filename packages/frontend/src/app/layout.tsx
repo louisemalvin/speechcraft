@@ -13,12 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sermon Translator",
-  description: "Real-time Indonesian-to-English church sermon translation",
+  title: "Speechcraft",
+  description: "Real-time Indonesian-to-English translation",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: "Sermon Translator",
+    title: "Speechcraft",
     statusBarStyle: "black-translucent",
   },
 };
