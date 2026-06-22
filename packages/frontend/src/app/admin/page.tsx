@@ -1,35 +1,36 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
 import { Button } from '@/components/Button';
 import { PinGate } from '@/components/PinGate';
 import { StatusDot } from '@/components/StatusDot';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { usePinAuth } from '@/hooks/usePinAuth';
 import { subscribeToLiveSermon, type TranslationSegment } from '@/services/realtime/liveSync';
 
 export default function AdminPage() {
-  const [isMounted, setIsMounted] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [pinInput, setPinInput] = useState('');
-  const [pinError, setPinError] = useState<string | null>(null);
-  const [rememberDevice, setRememberDevice] = useState(false);
+  const {
+    isMounted,
+    isAuthenticated,
+    pinInput,
+    pinError,
+    rememberDevice,
+    setPinInput,
+    setRememberDevice,
+    handlePinSubmit,
+    handleLock,
+  } = usePinAuth();
 
   const [logs, setLogs] = useState<TranslationSegment[]>([]);
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-    const pin = sessionStorage.getItem('speaker_pin') || localStorage.getItem('speaker_pin');
-    if (pin) {
-      sessionStorage.setItem('speaker_pin', pin);
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!isAuthenticated) return;
+
+    setConnected(true);
 
     // Subscribe to the live broadcast feed for debugging logs
     const unsubscribe = subscribeToLiveSermon((segment: TranslationSegment) => {
@@ -37,46 +38,27 @@ export default function AdminPage() {
       setLogs((prev) => [segment, ...prev]); // Prepend to see the latest log first
     });
 
-    // Simple ping timeout simulation to toggle connected state
-    const interval = setInterval(() => {
-      // If we haven't received anything or channel drops, you can keep connected status
-      // We set connected state true initially because subscribeToLiveSermon handles connection.
-      setConnected(true);
-    }, 5000);
-
     return () => {
       unsubscribe();
-      clearInterval(interval);
     };
   }, [isAuthenticated]);
-
-  const handlePinSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pinInput.trim()) return setPinError('PIN cannot be empty.');
-    sessionStorage.setItem('speaker_pin', pinInput);
-    if (rememberDevice) localStorage.setItem('speaker_pin', pinInput);
-    setIsAuthenticated(true); setPinError(null);
-  };
-
-  const handleLock = () => {
-    sessionStorage.removeItem('speaker_pin'); localStorage.removeItem('speaker_pin');
-    setIsAuthenticated(false); setPinInput('');
-  };
 
   const clearLogs = () => {
     setLogs([]);
   };
 
-  if (!isMounted) return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center font-sans">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm text-slate-400 font-medium">Loading debugger...</span>
-      </div>
-    </div>
-  );
+  if (!isMounted) return <LoadingSpinner label="Loading debugger..." />;
 
-  if (!isAuthenticated) return <PinGate pinInput={pinInput} pinError={pinError} rememberDevice={rememberDevice} onPinInputChange={setPinInput} onRememberDeviceChange={setRememberDevice} onSubmit={handlePinSubmit} />;
+  if (!isAuthenticated) return (
+    <PinGate
+      pinInput={pinInput}
+      pinError={pinError}
+      rememberDevice={rememberDevice}
+      onPinInputChange={setPinInput}
+      onRememberDeviceChange={setRememberDevice}
+      onSubmit={handlePinSubmit}
+    />
+  );
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col p-4 md:p-8 font-sans">
@@ -94,7 +76,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" iconLeft={<Icon name="Lock" className="w-3.5 h-3.5" />} onClick={handleLock}>Lock</Button>
+            <Button variant="secondary" size="sm" iconLeft={<Icon name="Lock" className="w-3.5 h-3.5" />} onClick={() => handleLock()}>Lock</Button>
           </div>
         </div>
 

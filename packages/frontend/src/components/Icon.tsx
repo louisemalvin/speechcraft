@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { ReactNode, ComponentType } from 'react';
 
 interface IconProps {
   name:
@@ -10,7 +10,6 @@ interface IconProps {
     | 'Lock'
     | 'Settings'
     | 'Headphones'
-    | 'ChevronDown'
     | 'Close'
     | 'UnlockArrow'
     | 'Broadcast'
@@ -34,7 +33,7 @@ function SvgWrapper({
 }: {
   sizeClass: string;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   strokeWidth?: number;
 }) {
   return (
@@ -109,14 +108,6 @@ function HeadphonesIcon({ sizeClass, className }: { sizeClass: string; className
   );
 }
 
-function ChevronDownIcon({ sizeClass, className }: { sizeClass: string; className?: string }) {
-  return (
-    <SvgWrapper sizeClass={sizeClass} className={className}>
-      <polyline points="6 9 12 15 18 9" />
-    </SvgWrapper>
-  );
-}
-
 function CloseIcon({ sizeClass, className }: { sizeClass: string; className?: string }) {
   return (
     <SvgWrapper sizeClass={sizeClass} className={className}>
@@ -160,7 +151,7 @@ function ErrorCircleIcon({ sizeClass, className }: { sizeClass: string; classNam
 
 const ICON_MAP: Record<
   string,
-  React.ComponentType<{ sizeClass: string; className?: string }>
+  ComponentType<{ sizeClass: string; className?: string }>
 > = {
   Microphone: MicrophoneIcon,
   Play: PlayIcon,
@@ -168,7 +159,6 @@ const ICON_MAP: Record<
   Lock: LockIcon,
   Settings: SettingsIcon,
   Headphones: HeadphonesIcon,
-  ChevronDown: ChevronDownIcon,
   Close: CloseIcon,
   UnlockArrow: UnlockArrowIcon,
   Broadcast: BroadcastIcon,

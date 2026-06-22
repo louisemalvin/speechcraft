@@ -14,7 +14,6 @@ export function subscribeToLiveSermon(
 
   channel
     .on('broadcast', { event: 'translation_segment' }, ({ payload }) => {
-      console.log('[VIEWER] Received translation_segment:', payload);
       onSegmentReceived(payload as TranslationSegment);
     })
     .subscribe();

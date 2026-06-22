@@ -1,55 +1,47 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useAudioCapture } from '../../hooks/useAudioCapture';
 import { Icon } from '@/components/Icon';
 import { Button } from '@/components/Button';
 import { PinGate } from '@/components/PinGate';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { usePinAuth } from '@/hooks/usePinAuth';
 
 export default function SpeakerPage() {
-  const [isMounted, setIsMounted] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [pinInput, setPinInput] = useState('');
-  const [pinError, setPinError] = useState<string | null>(null);
-  const [rememberDevice, setRememberDevice] = useState(false);
   const sermonIdRef = useRef(Date.now().toString());
 
   const { isListening, start, stop, error, volume } =
     useAudioCapture(sermonIdRef.current);
 
-  useEffect(() => {
-    setIsMounted(true);
-    const pin = sessionStorage.getItem('speaker_pin') || localStorage.getItem('speaker_pin');
-    if (pin) {
-      sessionStorage.setItem('speaker_pin', pin);
-      setIsAuthenticated(true);
-    }
-  }, []);
+  const {
+    isMounted,
+    isAuthenticated,
+    pinInput,
+    pinError,
+    rememberDevice,
+    setPinInput,
+    setRememberDevice,
+    handlePinSubmit,
+    handleLock,
+  } = usePinAuth();
 
-  const handlePinSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pinInput.trim()) return setPinError('PIN cannot be empty.');
-    sessionStorage.setItem('speaker_pin', pinInput);
-    if (rememberDevice) localStorage.setItem('speaker_pin', pinInput);
-    setIsAuthenticated(true); setPinError(null);
-  };
-
-  const handleLock = () => {
+  const onLock = () => {
     if (isListening) stop();
-    sessionStorage.removeItem('speaker_pin'); localStorage.removeItem('speaker_pin');
-    setIsAuthenticated(false); setPinInput('');
   };
 
-  if (!isMounted) return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center font-sans">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm text-slate-400 font-medium">Loading console...</span>
-      </div>
-    </div>
-  );
+  if (!isMounted) return <LoadingSpinner label="Loading console..." />;
 
-  if (!isAuthenticated) return <PinGate pinInput={pinInput} pinError={pinError} rememberDevice={rememberDevice} onPinInputChange={setPinInput} onRememberDeviceChange={setRememberDevice} onSubmit={handlePinSubmit} />;
+  if (!isAuthenticated) return (
+    <PinGate
+      pinInput={pinInput}
+      pinError={pinError}
+      rememberDevice={rememberDevice}
+      onPinInputChange={setPinInput}
+      onRememberDeviceChange={setRememberDevice}
+      onSubmit={handlePinSubmit}
+    />
+  );
 
   const gradientClasses = isListening
     ? 'bg-gradient-to-br from-status-error to-status-error-dark hover:from-status-error-bright hover:to-status-error shadow-status-error-dark/20'
@@ -125,7 +117,7 @@ export default function SpeakerPage() {
       )}
 
       <div className="pt-4">
-        <Button variant="secondary" size="md" iconLeft={<Icon name="Lock" className="w-4 h-4" />} onClick={handleLock}>Lock Console</Button>
+        <Button variant="secondary" size="md" iconLeft={<Icon name="Lock" className="w-4 h-4" />} onClick={() => handleLock(onLock)}>Lock Console</Button>
       </div>
     </main>
   );
