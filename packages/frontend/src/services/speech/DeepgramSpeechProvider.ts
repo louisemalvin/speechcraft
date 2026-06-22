@@ -16,7 +16,7 @@ export class DeepgramSpeechProvider implements SpeechToTextProvider {
 
       try {
         this.socket = new WebSocket(
-          'wss://api.au.deepgram.com/v1/listen?language=id&model=nova-3&encoding=linear16&sample_rate=16000&punctuate=true&endpointing=300',
+          'wss://api.au.deepgram.com/v1/listen?language=id&model=nova-3&encoding=linear16&sample_rate=16000&punctuate=true&endpointing=500',
           ['token', this.token]
         );
 

@@ -139,7 +139,7 @@ export function useAudioCapture(): UseAudioCaptureResult {
         const lastChar = rawText.trim().charAt(rawText.trim().length - 1);
         const hasPunctuation = lastChar === '.' || lastChar === '!' || lastChar === '?';
 
-        if (wordCount >= 3 || hasPunctuation) {
+        if (wordCount >= 8 || hasPunctuation) {
           void flushBuffer();
           return;
         }
