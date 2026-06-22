@@ -20,44 +20,27 @@ const FONT_SIZE_LABELS: Record<number, string> = {
 };
 
 const AUTO_SCROLL_THRESHOLD = 80; // px from bottom to consider "at bottom"
-const DISCONNECT_TIMEOUT_MS = 10_000; // 10 seconds
 
 export default function Home() {
   const [segments, setSegments] = useState<TranslationSegment[]>([]);
   const [ttsEnabled, setTtsEnabled] = useState(false);
-  const [connected, setConnected] = useState(false);
   const [fontSizeIdx, setFontSizeIdx] = useState(5); // Default to 'text-3xl' (index 5)
   const [isScrolledUp, setIsScrolledUp] = useState(false);
 
   const ttsRef = useRef<TextToSpeechService>(new TextToSpeechService());
   const prevSegmentsLengthRef = useRef(0);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const disconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Subscription + disconnect detection
+  // Subscription
   useEffect(() => {
     const currentTts = ttsRef.current;
     const unsubscribe = subscribeToLiveSermon((segment: TranslationSegment) => {
       setSegments((prev) => [...prev, segment]);
-
-      // Clear any pending disconnect timeout
-      if (disconnectTimeoutRef.current !== null) {
-        clearTimeout(disconnectTimeoutRef.current);
-      }
-      setConnected(true);
-
-      // Arm disconnect timeout: if no segment in 10s, set connected=false
-      disconnectTimeoutRef.current = setTimeout(() => {
-        setConnected(false);
-      }, DISCONNECT_TIMEOUT_MS);
     });
 
     return () => {
       unsubscribe();
       currentTts.setEnabled(false);
-      if (disconnectTimeoutRef.current !== null) {
-        clearTimeout(disconnectTimeoutRef.current);
-      }
     };
   }, []);
 
@@ -109,17 +92,7 @@ export default function Home() {
         </h1>
       </header>
 
-      {/* ── Error Banner ── */}
-      {!connected && segments.length > 0 && (
-        <div
-          role="alert"
-          aria-live="assertive"
-          className="flex items-center gap-2 px-4 py-2 bg-status-error-dark/40 border-b border-status-error/40 text-status-error-bright text-sm flex-shrink-0"
-        >
-          <Icon name="Warning" size="sm" />
-          <span>Connection lost. Reconnecting...</span>
-        </div>
-      )}
+
 
       {/* ── Feed Area ── */}
       <main

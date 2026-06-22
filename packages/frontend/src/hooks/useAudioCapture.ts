@@ -25,6 +25,8 @@ export function useAudioCapture(): UseAudioCaptureResult {
   const sequenceRef = useRef<number>(1);
   const historyRef = useRef<{ raw: string; translated: string }[]>([]);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const accumulationBufferRef = useRef<string[]>([]);
+  const accumulationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const start = async () => {
     try {
@@ -54,48 +56,92 @@ export function useAudioCapture(): UseAudioCaptureResult {
       channelRef.current = supabase.channel('sermon-live');
       await channelRef.current.subscribe();
 
-      // 3. Instantiate and run orchestrator with text capture handler
+      // 3. Define flushBuffer
+      const ACCUMULATION_TIMEOUT_MS = 4000;
+      const MAX_ACCUMULATION_SEGMENTS = 5;
+
+      const flushBuffer = async () => {
+        if (accumulationTimerRef.current !== null) {
+          clearTimeout(accumulationTimerRef.current);
+          accumulationTimerRef.current = null;
+        }
+
+        const buffer = accumulationBufferRef.current;
+        if (buffer.length === 0) return;
+        const joined = buffer.join(' ');
+
+        // Clear buffer BEFORE the async call to prevent re-entrance
+        accumulationBufferRef.current = [];
+
+        setLatestTranscribedText(joined);
+
+        try {
+          const { data, error: fnError } = await supabase.functions.invoke('translate', {
+            body: {
+              raw_text: joined,
+              history: historyRef.current,
+              sequence_number: sequenceRef.current,
+            },
+            headers: {
+              'x-admin-pin': pin,
+            },
+          });
+
+          if (fnError) {
+            throw new Error(`Translation server error: ${fnError.message || fnError}`);
+          }
+
+          const translatedText = data.translated_text;
+          if (!translatedText) {
+            throw new Error('Translation response missing translated_text');
+          }
+
+          setLatestTranslatedText(translatedText);
+
+          const updatedHistory = [...historyRef.current, { raw: joined, translated: translatedText }];
+          if (updatedHistory.length > MAX_HISTORY_WINDOW) updatedHistory.shift();
+          historyRef.current = updatedHistory;
+
+          sequenceRef.current += 1;
+        } catch (apiErr: unknown) {
+          const errMsg = apiErr instanceof Error ? apiErr.message : String(apiErr);
+          setError(`Translation failed: ${errMsg}`);
+        }
+      };
+
+      // 4. Accumulating onTextCaptured callback
+      const onTextCaptured = (rawText: string) => {
+        // Push the new fragment to the buffer
+        accumulationBufferRef.current.push(rawText);
+
+        // Check if THIS fragment (the most recent one) ends with sentence-ending punctuation
+        const trimmed = rawText.trim();
+        const lastChar = trimmed.charAt(trimmed.length - 1);
+        if (lastChar === '.' || lastChar === '!' || lastChar === '?') {
+          void flushBuffer();
+          return;
+        }
+
+        // Safety valve: flush if 5 fragments have accumulated
+        if (accumulationBufferRef.current.length >= MAX_ACCUMULATION_SEGMENTS) {
+          void flushBuffer();
+          return;
+        }
+
+        // Reset the 4-second silence timer
+        if (accumulationTimerRef.current !== null) {
+          clearTimeout(accumulationTimerRef.current);
+        }
+        accumulationTimerRef.current = setTimeout(() => {
+          void flushBuffer();
+        }, ACCUMULATION_TIMEOUT_MS);
+      };
+
+      // 5. Create orchestrator with accumulating callback
       orchestratorRef.current = new AudioOrchestrator(
         providerType,
         { apiKey: token },
-        async (rawText) => {
-          setLatestTranscribedText(rawText);
-
-          try {
-            const { data, error: fnError } = await supabase.functions.invoke('translate', {
-              body: {
-                raw_text: rawText,
-                history: historyRef.current,
-                sequence_number: sequenceRef.current,
-              },
-              headers: {
-                'x-admin-pin': pin,
-              },
-            });
-
-            if (fnError) {
-              throw new Error(`Translation server error: ${fnError.message || fnError}`);
-            }
-
-            const translatedText = data.translated_text;
-
-            if (!translatedText) {
-              throw new Error('Translation response missing translated_text');
-            }
-
-            setLatestTranslatedText(translatedText);
-
-            // Update in-memory sliding history (max MAX_HISTORY_WINDOW items)
-            const updatedHistory = [...historyRef.current, { raw: rawText, translated: translatedText }];
-            if (updatedHistory.length > MAX_HISTORY_WINDOW) updatedHistory.shift();
-            historyRef.current = updatedHistory;
-
-            sequenceRef.current += 1;
-          } catch (apiErr: unknown) {
-            const errMsg = apiErr instanceof Error ? apiErr.message : String(apiErr);
-            setError(`Translation failed: ${errMsg}`);
-          }
-        },
+        onTextCaptured,
         (vol) => {
           setVolume(vol);
         }
@@ -111,6 +157,47 @@ export function useAudioCapture(): UseAudioCaptureResult {
   };
 
   const stop = async () => {
+    // Flush any accumulated fragments before stopping
+    if (accumulationBufferRef.current.length > 0) {
+      if (accumulationTimerRef.current !== null) {
+        clearTimeout(accumulationTimerRef.current);
+        accumulationTimerRef.current = null;
+      }
+
+      const accumulatedText = accumulationBufferRef.current.join(' ');
+      accumulationBufferRef.current = [];
+
+      setLatestTranscribedText(accumulatedText);
+
+      try {
+        const pin = sessionStorage.getItem('speaker_pin') || '';
+        const { data, error: fnError } = await supabase.functions.invoke('translate', {
+          body: {
+            raw_text: accumulatedText,
+            history: historyRef.current,
+            sequence_number: sequenceRef.current,
+          },
+          headers: { 'x-admin-pin': pin },
+        });
+
+        if (!fnError && data?.translated_text) {
+          setLatestTranslatedText(data.translated_text);
+          const updatedHistory = [...historyRef.current, { raw: accumulatedText, translated: data.translated_text }];
+          if (updatedHistory.length > MAX_HISTORY_WINDOW) updatedHistory.shift();
+          historyRef.current = updatedHistory;
+          sequenceRef.current += 1;
+        }
+      } catch {
+        // Best-effort flush on stop; silently ignore errors
+      }
+    }
+
+    // Clear any pending timer
+    if (accumulationTimerRef.current !== null) {
+      clearTimeout(accumulationTimerRef.current);
+      accumulationTimerRef.current = null;
+    }
+
     if (orchestratorRef.current) {
       await orchestratorRef.current.stop();
       orchestratorRef.current = null;
