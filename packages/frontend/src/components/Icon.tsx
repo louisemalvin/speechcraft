@@ -10,6 +10,7 @@ interface IconProps {
     | 'Lock'
     | 'Settings'
     | 'Headphones'
+    | 'Volume'
     | 'Close'
     | 'UnlockArrow'
     | 'Broadcast'
@@ -98,12 +99,20 @@ function SettingsIcon({ sizeClass, className }: { sizeClass: string; className?:
   );
 }
 
-function HeadphonesIcon({ sizeClass, className }: { sizeClass: string; className?: string }) {
+function VolumeIcon({ sizeClass, className }: { sizeClass: string; className?: string }) {
   return (
     <SvgWrapper sizeClass={sizeClass} className={className}>
       <path d="M11 5L6 9H2v6h4l5 4V5z" />
       <path d="M19.07 4.93a10 10 0 010 14.14" />
       <path d="M15.54 8.46a5 5 0 010 7.07" />
+    </SvgWrapper>
+  );
+}
+
+function HeadphonesIcon({ sizeClass, className }: { sizeClass: string; className?: string }) {
+  return (
+    <SvgWrapper sizeClass={sizeClass} className={className}>
+      <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" />
     </SvgWrapper>
   );
 }
@@ -159,6 +168,7 @@ const ICON_MAP: Record<
   Lock: LockIcon,
   Settings: SettingsIcon,
   Headphones: HeadphonesIcon,
+  Volume: VolumeIcon,
   Close: CloseIcon,
   UnlockArrow: UnlockArrowIcon,
   Broadcast: BroadcastIcon,

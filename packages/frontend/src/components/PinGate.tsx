@@ -32,7 +32,7 @@ export function PinGate({
           <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-4">
             <Icon name="Lock" className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white mb-2">Speaker Console</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-text-primary mb-2">Speaker Console</h1>
           <p className="text-text-secondary text-sm">Please enter the speaker PIN to access the broadcast controls.</p>
         </div>
 
@@ -50,7 +50,7 @@ export function PinGate({
               className="w-full bg-surface-primary border border-surface-border rounded-xl px-4 py-3 text-center text-lg tracking-widest text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all font-mono"
             />
             {pinError && (
-              <p className="text-status-error text-sm mt-2 font-medium flex items-center gap-1.5 justify-center">
+              <p role="alert" className="text-status-error text-sm mt-2 font-medium flex items-center gap-1.5 justify-center">
                 <Icon name="Warning" className="w-4 h-4 text-status-error" />
                 {pinError}
               </p>
