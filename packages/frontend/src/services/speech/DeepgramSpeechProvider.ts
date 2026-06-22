@@ -7,10 +7,15 @@ export class DeepgramSpeechProvider implements SpeechToTextProvider {
   private audioContext: AudioContext | null = null;
   private workletNode: AudioWorkletNode | null = null;
   private source: MediaStreamAudioSourceNode | null = null;
+  private hasUnfinalizedAudio = false;
+  private finalizeInterval: ReturnType<typeof setInterval> | null = null;
+  private lastFinalizeTime = 0;
 
   constructor(private token: string) {}
 
   public start(stream: MediaStream, onTextCaptured: (text: string) => void): Promise<void> {
+    this.lastFinalizeTime = Date.now();
+    this.hasUnfinalizedAudio = false;
     return new Promise<void>((resolve, reject) => {
       let isInitialized = false;
 
@@ -36,10 +41,22 @@ export class DeepgramSpeechProvider implements SpeechToTextProvider {
             this.workletNode.port.onmessage = (event) => {
               if (this.socket?.readyState !== WebSocket.OPEN) return;
               this.socket.send(event.data);
+              this.hasUnfinalizedAudio = true;
             };
 
             this.source.connect(this.workletNode);
             this.workletNode.connect(this.audioContext.destination);
+
+            this.finalizeInterval = setInterval(() => {
+              const now = Date.now();
+              if (this.hasUnfinalizedAudio && now - this.lastFinalizeTime >= 4000) {
+                if (this.socket?.readyState === WebSocket.OPEN) {
+                  this.socket.send(JSON.stringify({ type: 'Finalize' }));
+                }
+                this.lastFinalizeTime = now;
+                this.hasUnfinalizedAudio = false;
+              }
+            }, 500);
 
             isInitialized = true;
             resolve();
@@ -58,6 +75,8 @@ export class DeepgramSpeechProvider implements SpeechToTextProvider {
             const isFinal = data.is_final;
 
             if (isFinal && transcript && transcript.trim().length > 0) {
+              this.lastFinalizeTime = Date.now();
+              this.hasUnfinalizedAudio = false;
               onTextCaptured(transcript.trim());
             }
           } catch {
@@ -88,6 +107,11 @@ export class DeepgramSpeechProvider implements SpeechToTextProvider {
   }
 
   public async stop(): Promise<void> {
+    if (this.finalizeInterval) {
+      clearInterval(this.finalizeInterval);
+      this.finalizeInterval = null;
+    }
+
     try {
       if (this.workletNode) {
         this.workletNode.disconnect();

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useAudioCapture } from '../../hooks/useAudioCapture';
 import { Icon } from '@/components/Icon';
 import { Button } from '@/components/Button';
@@ -12,6 +13,20 @@ import { Card } from '@/components/Card';
 
 export default function SpeakerPage() {
   const { isListening, start, stop, error, volume } = useAudioCapture();
+  const [asrProvider, setAsrProvider] = useState<'deepgram' | 'webspeech'>('deepgram');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('asr_provider');
+    if (saved === 'deepgram' || saved === 'webspeech') {
+      setAsrProvider(saved);
+    }
+  }, []);
+
+  const handleAsrChange = (provider: 'deepgram' | 'webspeech') => {
+    if (isListening) return;
+    setAsrProvider(provider);
+    localStorage.setItem('asr_provider', provider);
+  };
 
   const {
     isMounted,
@@ -79,6 +94,66 @@ export default function SpeakerPage() {
           </div>
         </Card>
       )}
+
+      {/* ASR Provider Settings */}
+      <div className="w-full max-w-md mb-8">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary mb-3">
+          Speech-to-Text Provider
+        </label>
+        <div className="grid grid-cols-1 gap-3">
+          <button
+            type="button"
+            disabled={isListening}
+            onClick={() => handleAsrChange('deepgram')}
+            className={`w-full text-left p-4 rounded-xl border transition-all ${
+              asrProvider === 'deepgram'
+                ? 'bg-accent/10 border-accent/80 text-text-primary shadow-sm font-sans'
+                : 'bg-surface-secondary/60 border-surface-border/50 text-text-secondary hover:bg-surface-secondary/90 hover:border-surface-border/80 font-sans'
+            } ${isListening ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                asrProvider === 'deepgram' ? 'border-accent' : 'border-surface-border'
+              }`}>
+                {asrProvider === 'deepgram' && (
+                  <div className="w-2 h-2 rounded-full bg-accent" />
+                )}
+              </div>
+              <div>
+                <span className="font-semibold text-sm block text-text-primary">Deepgram (Premium)</span>
+                <span className="text-xs text-text-muted">Cloud-powered transcription. High accuracy.</span>
+              </div>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            disabled={isListening}
+            onClick={() => handleAsrChange('webspeech')}
+            className={`w-full text-left p-4 rounded-xl border transition-all ${
+              asrProvider === 'webspeech'
+                ? 'bg-accent/10 border-accent/80 text-text-primary shadow-sm font-sans'
+                : 'bg-surface-secondary/60 border-surface-border/50 text-text-secondary hover:bg-surface-secondary/90 hover:border-surface-border/80 font-sans'
+            } ${isListening ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                asrProvider === 'webspeech' ? 'border-accent' : 'border-surface-border'
+              }`}>
+                {asrProvider === 'webspeech' && (
+                  <div className="w-2 h-2 rounded-full bg-accent" />
+                )}
+              </div>
+              <div>
+                <span className="font-semibold text-sm block text-text-primary">Web Speech API (Free)</span>
+                <span className="text-xs text-text-muted block mt-0.5">
+                  Web Speech API is best supported on Chrome/Edge
+                </span>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
 
       <div className="pt-4">
         <Button variant="secondary" size="md" iconLeft={<Icon name="Lock" className="w-4 h-4" />} onClick={() => handleLock(onLock)}>Lock Console</Button>

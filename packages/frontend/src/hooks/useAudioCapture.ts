@@ -60,8 +60,7 @@ export function useAudioCapture(): UseAudioCaptureResult {
       await channelRef.current.subscribe();
 
       // 3. Define flushBuffer
-      const ACCUMULATION_TIMEOUT_MS = 4000;
-      const MAX_ACCUMULATION_SEGMENTS = 5;
+      const ACCUMULATION_TIMEOUT_MS = 2000;
 
       const flushBuffer = async () => {
         if (accumulationTimerRef.current !== null) {
@@ -133,21 +132,19 @@ export function useAudioCapture(): UseAudioCaptureResult {
         // Push the new fragment to the buffer
         accumulationBufferRef.current.push(rawText);
 
-        // Check if THIS fragment (the most recent one) ends with sentence-ending punctuation
-        const trimmed = rawText.trim();
-        const lastChar = trimmed.charAt(trimmed.length - 1);
-        if (lastChar === '.' || lastChar === '!' || lastChar === '?') {
+        const joined = accumulationBufferRef.current.join(' ');
+        const wordCount = joined.trim().split(/\s+/).filter(Boolean).length;
+
+        // Check if the segment is long enough or ends with sentence-ending punctuation
+        const lastChar = rawText.trim().charAt(rawText.trim().length - 1);
+        const hasPunctuation = lastChar === '.' || lastChar === '!' || lastChar === '?';
+
+        if (wordCount >= 3 || hasPunctuation) {
           void flushBuffer();
           return;
         }
 
-        // Safety valve: flush if 5 fragments have accumulated
-        if (accumulationBufferRef.current.length >= MAX_ACCUMULATION_SEGMENTS) {
-          void flushBuffer();
-          return;
-        }
-
-        // Reset the 4-second silence timer
+        // Reset the 2-second silence timer for short segments
         if (accumulationTimerRef.current !== null) {
           clearTimeout(accumulationTimerRef.current);
         }

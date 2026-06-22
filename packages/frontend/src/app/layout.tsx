@@ -13,12 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Speechcraft",
-  description: "Real-time Indonesian-to-English translation",
+  title: "Speechcraft - Live Viewer",
+  description: "Real-time translation viewer",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: "Speechcraft",
+    title: "Speechcraft Viewer",
     statusBarStyle: "black-translucent",
   },
 };
