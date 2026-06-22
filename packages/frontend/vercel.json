@@ -1,0 +1,3 @@
+{
+  "buildCommand": "cd ../.. && pnpm --filter shared build && cd packages/frontend && next build"
+}
