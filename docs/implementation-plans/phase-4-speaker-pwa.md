@@ -35,7 +35,7 @@ Develop the `/speaker` route inside `packages/frontend`. This page captures audi
    * **Wake Lock**: Requests `navigator.wakeLock.request('screen')` to prevent the device from entering sleep mode.
 
 ### Step 4: Implement `useAudioCapture` React Hook
-1. Develop the React Hook `useAudioCapture(sermonId: string)` in `/src/hooks/useAudioCapture.ts` using the template defined in [frontend-spec.md](file:///home/ltanaka/github/translation-service/docs/frontend-spec.md#L254-L327).
+1. Develop the React Hook `useAudioCapture(sermonId: string)` in `/src/hooks/useAudioCapture.ts`.
 2. Ensure that on final text detection, the hook:
    * Sends the raw text + context array to the `/translate` Edge Function using `fetch()`.
    * Appends the translated return values to `historyRef` (maintaining the last 3 entries in memory).

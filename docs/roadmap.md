@@ -16,7 +16,7 @@ This document outlines the current version capabilities and future feature ideas
 ## 🗺️ Future Ideas & Milestone Targets
 
 ### 1. Multi-Language Support
-*   **Alternative Pairs**: Support translations from and to other major language pairs (e.g. English $\rightarrow$ Spanish, Indonesian $\rightarrow$ Mandarin).
+*   **Alternative Pairs**: Support translations from and to other major language pairs (e.g. English → Spanish, Indonesian → Mandarin).
 *   **Target Selection**: Allow viewers to select their preferred target language from a dropdown, distributing different translations on separate WebSocket channels.
 
 ### 2. Streamlined Onboarding

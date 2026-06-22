@@ -33,9 +33,9 @@ The Speechcraft translation pipeline represents the sequential stages required t
 *   The backend constructs a structured prompt payload for the **DeepSeek V4-Flash** API.
 *   A custom theological and common Indonesian-to-English church glossary is injected directly into the system prompt instructions.
 *   This glossary maps words that ASR engines commonly misspell or fail to capitalize:
-    *   `Tuhan` $\rightarrow$ `Lord` (corrects common ASR homophones like `tuan`)
-    *   `Roh Kudus` $\rightarrow$ `Holy Spirit` (handles lowercase ASR inputs like `roh kudus`)
-    *   `Alkitab` $\rightarrow$ `Bible`
+    *   `Tuhan` → `Lord` (corrects common ASR homophones like `tuan`)
+    *   `Roh Kudus` → `Holy Spirit` (handles lowercase ASR inputs like `roh kudus`)
+    *   `Alkitab` → `Bible`
 
 ### 5. DeepSeek API completion
 *   The backend calls the DeepSeek completion endpoint (`deepseek-chat` model) with a low temperature of `0.3` to enforce translation stability.
@@ -61,7 +61,7 @@ The Speechcraft translation pipeline represents the sequential stages required t
 ### Why a Sliding Context Window is Used
 Translating real-time speech word-for-word or sentence-for-sentence in isolation causes "context fragmentation." The translation model loses track of pronouns, sentence flow, and past references.
 By sending a sliding window of the **last 3 segments**, the DeepSeek model maintains:
-1.  **Pronoun Consistency**: Resolving gender pronouns (e.g. *dia* $\rightarrow$ *he/she* depending on context).
+1.  **Pronoun Consistency**: Resolving gender pronouns (e.g. *dia* → *he/she* depending on context).
 2.  **Tense Continuity**: Maintaining past/present contexts across sentences.
 3.  **Correct Terminology Selection**: Choosing the right theological terms based on the preceding topic.
 

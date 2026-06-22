@@ -113,7 +113,7 @@ ADMIN_PIN_HASH=0f7d0f6b15be5f7a0df98ca3de2c30d5fef1ebd8c06bcdfef6dd629591461789
 pnpm dev
 ```
 
-For comprehensive instructions on production setups, refer to the **[Deployment Guide](file:///home/ltanaka/github/translation-service/docs/deployment.md)**.
+For comprehensive instructions on production setups, refer to the **[Deployment Guide](docs/deployment.md)**.
 
 ---
 
@@ -121,12 +121,12 @@ For comprehensive instructions on production setups, refer to the **[Deployment 
 
 Explore detailed guides on each system component:
 
-*   **[Overview Specification](file:///home/ltanaka/github/translation-service/docs/overview.md)**: Product mission, target personas, and scope details.
-*   **[System Architecture](file:///home/ltanaka/github/translation-service/docs/architecture.md)**: Full component layouts, diagrams, and block responsibilities.
-*   **[Translation Pipeline](file:///home/ltanaka/github/translation-service/docs/translation-pipeline.md)**: Context window mapping, DeepSeek integration details, and glossary settings.
-*   **[Deployment Guide](file:///home/ltanaka/github/translation-service/docs/deployment.md)**: Serverless configuration, secrets management, and environment variables.
-*   **[Security & Privacy](file:///home/ltanaka/github/translation-service/docs/security.md)**: Brute-force protections, rate limiting, and client authentication tokens.
-*   **[User Journeys](file:///home/ltanaka/github/translation-service/docs/user-journeys.md)**: Detailed step-by-step user paths for Speakers, Viewers, and Administrators.
-*   **[System Performance](file:///home/ltanaka/github/translation-service/docs/performance.md)**: Reconnect behaviours, failover conditions, and network benchmarks.
-*   **[Translation Glossary](file:///home/ltanaka/github/translation-service/docs/glossary.md)**: Detailed Indonesian-to-English glossary settings.
-*   **[Project Roadmap](file:///home/ltanaka/github/translation-service/docs/roadmap.md)**: Future ideas, multi-language planning, and analytical milestones.
+*   **[Overview Specification](docs/overview.md)**: Product mission, target personas, and scope details.
+*   **[System Architecture](docs/architecture.md)**: Full component layouts, diagrams, and block responsibilities.
+*   **[Translation Pipeline](docs/translation-pipeline.md)**: Context window mapping, DeepSeek integration details, and glossary settings.
+*   **[Deployment Guide](docs/deployment.md)**: Serverless configuration, secrets management, and environment variables.
+*   **[Security & Privacy](docs/security.md)**: Brute-force protections, rate limiting, and client authentication tokens.
+*   **[User Journeys](docs/user-journeys.md)**: Detailed step-by-step user paths for Speakers, Viewers, and Administrators.
+*   **[System Performance](docs/performance.md)**: Reconnect behaviours, failover conditions, and network benchmarks.
+*   **[Translation Glossary](docs/glossary.md)**: Detailed Indonesian-to-English glossary settings.
+*   **[Project Roadmap](docs/roadmap.md)**: Future ideas, multi-language planning, and analytical milestones.
