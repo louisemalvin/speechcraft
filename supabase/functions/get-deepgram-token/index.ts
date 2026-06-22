@@ -138,18 +138,7 @@ serve(async (req) => {
 
     if (!dgResponse.ok) {
       const errorText = await dgResponse.text();
-      console.warn(`Deepgram API returned error status: ${dgResponse.status}, body: ${errorText}`);
-      
-      // Fallback: If the API key does not have permissions to create temporary keys (403 Forbidden),
-      // return the configured key directly so the app still functions.
-      if (dgResponse.status === 403 || dgResponse.status === 401) {
-        console.warn("Insufficient permissions to generate temporary keys. Falling back to configured key.");
-        return new Response(JSON.stringify({ key: deepgramApiKey, token: deepgramApiKey }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
-      }
-      
+      console.error(`Deepgram API returned error status: ${dgResponse.status}, body: ${errorText}`);
       throw new Error(`Deepgram token request failed with status ${dgResponse.status}`);
     }
 
