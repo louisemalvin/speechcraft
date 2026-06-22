@@ -39,55 +39,43 @@ The Speechcraft logo depicts two overlapping speech bubbles — one dark (source
 
 All colors below are defined as CSS custom properties in [`globals.css`](../packages/frontend/src/app/globals.css).
 
-#### Surface (Dark Theme — Default)
+#### Surface (Warm Light Theme — Default)
 
 | Token | Hex | Purpose |
 |---|---|---|
-| `--color-surface-primary` | `#020617` | Page background (slate-950) |
-| `--color-surface-secondary` | `#0f172a` | Card backgrounds, panels (slate-900) |
-| `--color-surface-tertiary` | `#1e293b` | Elevated surfaces, hover states (slate-800) |
-| `--color-surface-border` | `#1e293b` | Dividers, card borders |
-| `--color-surface-muted` | `#334155` | Disabled backgrounds, subtle fills (slate-700) |
+| `--color-surface-primary` | `#E8E0D4` | Page background (warm cream) |
+| `--color-surface-secondary` | `#F5F0EA` | Card backgrounds, panels (off-white) |
+| `--color-surface-tertiary` | `#E1D6C7` | Elevated surfaces, hover states |
+| `--color-surface-border` | `#C5B49F` | Dividers, card borders |
+| `--color-surface-muted` | `#D8CAB6` | Disabled backgrounds, subtle fills |
 
 #### Text
 
 | Token | Hex | Purpose |
 |---|---|---|
-| `--color-text-primary` | `#f1f5f9` | Headings, body copy (slate-100) |
-| `--color-text-secondary` | `#94a3b8` | Labels, captions, metadata (slate-400) |
-| `--color-text-muted` | `#475569` | Disabled text, timestamps (slate-600) |
+| `--color-text-primary` | `#3C1518` | Headings, body copy (maroon) |
+| `--color-text-secondary` | `#5E272B` | Labels, captions, metadata (burgundy) |
+| `--color-text-muted` | `#6B594B` | Disabled text, timestamps (warm gray/taupe) |
 
-#### Accent (Indigo)
+#### Accent (Wine)
 
 | Token | Hex | Purpose |
 |---|---|---|
-| `--color-accent` | `#6366f1` | Primary interactive elements (indigo-500) |
-| `--color-accent-hover` | `#818cf8` | Hover state (indigo-400) |
-| `--color-accent-strong` | `#4f46e5` | Filled buttons, strong CTA (indigo-600) |
-| `--color-accent-deep` | `#3730a3` | Pressed/active state (indigo-800) |
-| `--color-accent-muted` | `#4338ca` | Focus rings, subtle accent (indigo-700) |
+| `--color-accent` | `#A3424A` | Primary interactive elements (wine red) |
+| `--color-accent-hover` | `#C25560` | Hover state |
+| `--color-accent-strong` | `#8B2D35` | Filled buttons, strong CTA |
+| `--color-accent-deep` | `#6B1D24` | Pressed/active state |
+| `--color-accent-muted` | `#7A2830` | Focus rings, subtle accent |
 
 #### Status
 
 | Token | Hex | Purpose |
 |---|---|---|
-| `--color-status-live` | `#22c55e` | Live/active broadcast indicator (green-500) |
-| `--color-status-live-bright` | `#4ade80` | Pulsing live dot glow (green-400) |
-| `--color-status-error` | `#ef4444` | Error states, failed auth (red-500) |
-| `--color-status-error-bright` | `#f87171` | Error text highlights (red-400) |
+| `--color-status-live` | `#15803d` | Live/active broadcast indicator (green-700) |
+| `--color-status-live-bright` | `#22c55e` | Pulsing live dot glow (green-500) |
+| `--color-status-error` | `#b91c1c` | Error states, failed auth (red-700) |
+| `--color-status-error-bright` | `#ef4444` | Error text highlights (red-500) |
 | `--color-status-error-dark` | `#7f1d1d` | Error card backgrounds (red-900) |
-| `--color-status-error-bg` | `#450a0a` | Error banner fills (red-950) |
-
-#### Viewer Themes
-
-The viewer supports multiple reading themes for accessibility:
-
-| Theme | Background | Text | Border |
-|---|---|---|---|
-| **Dark (default)** | `#020617` | `#f1f5f9` | — |
-| **Blue** | `#172554` | `#eff6ff` | — |
-| **Sepia** | `#fffbeb` | `#451a03` | `#fde68a` |
-| **Light** | `#ffffff` | `#111827` | `#e5e7eb` |
 
 ---
 
@@ -96,10 +84,10 @@ The viewer supports multiple reading themes for accessibility:
 ### Font Stack
 
 ```css
-font-family: Arial, Helvetica, sans-serif;
+font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 ```
 
-System sans-serif stack for zero network latency. No Google Fonts dependency — critical for offline PWA scenarios and low-bandwidth church environments.
+Geist Sans loaded via `next/font` for high-quality modern typeface with system sans-serif fallback for offline/low-bandwidth situations.
 
 ### Type Scale
 
@@ -247,18 +235,17 @@ All layouts target **portrait mobile** as primary viewport. The viewer page is d
 | Requirement | Implementation |
 |---|---|
 | Touch targets | Min 48px height on all buttons |
-| Color contrast | WCAG AA — light text on dark surfaces (slate-100 on slate-950) |
+| Color contrast | WCAG AA/AAA — high contrast maroon text on light cream surfaces |
 | Focus indicators | Visible outline ring on keyboard focus (`focus-visible:outline-accent`) |
 | Screen reader | `aria-label` on status dots, semantic HTML structure |
 | Font scaling | User-controlled A-/A+ font size adjustment (viewer) |
-| Theme alternatives | Sepia and Light themes for light-sensitive or outdoor users |
 
 ---
 
 ## 📝 Usage Notes
 
-- **Dark theme is default** — optimized for low-light church environments and reduced eye strain during long services
-- **Indigo accent** chosen for neutrality — works across religious and secular contexts without implying a specific brand color
+- **Warm light theme is default** — matches the warm Speechcraft visual identity (`image.png`) for high readability and warmth during services
+- **Wine/maroon accent** chosen for brand alignment and strong visual hierarchy
 - **No decorative imagery** in the UI — translation text is the hero content. Everything else supports readability
 - **Status colors are semantic** — green = live, red = error. No ambiguous color usage
 - **All tokens are centralized** in `globals.css` — components reference tokens, never hardcoded hex values

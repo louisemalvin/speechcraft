@@ -6,6 +6,9 @@ import { Button } from '@/components/Button';
 import { PinGate } from '@/components/PinGate';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { usePinAuth } from '@/hooks/usePinAuth';
+import { BroadcastButton } from '@/components/BroadcastButton';
+import { VuMeter } from '@/components/VuMeter';
+import { Card } from '@/components/Card';
 
 export default function SpeakerPage() {
   const { isListening, start, stop, error, volume } = useAudioCapture();
@@ -39,77 +42,42 @@ export default function SpeakerPage() {
     />
   );
 
-  const gradientClasses = isListening
-    ? 'bg-gradient-to-br from-status-error to-status-error-dark hover:from-status-error-bright hover:to-status-error shadow-status-error-dark/20'
-    : 'bg-gradient-to-br from-accent-strong to-accent-deep hover:from-accent-hover hover:to-accent-strong shadow-accent-strong/20';
-
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 md:p-8 font-sans">
-      <div className="relative flex items-center justify-center w-48 h-48 mb-8">
-        {isListening && (
-          <>
-            {/* Outer ring scaling with volume */}
-            <div
-              className="absolute rounded-full bg-status-error/10 border border-status-error/20 transition-transform duration-75 ease-out"
-              style={{
-                width: '100%',
-                height: '100%',
-                transform: `scale(${1 + (volume / 100) * 0.4})`,
-              }}
-            />
-            {/* Inner ring scaling with volume */}
-            <div
-              className="absolute rounded-full bg-status-error/20 border border-status-error/30 transition-transform duration-100 ease-out"
-              style={{
-                width: '100%',
-                height: '100%',
-                transform: `scale(${1 + (volume / 100) * 0.2})`,
-              }}
-            />
-          </>
-        )}
-        <Button
-          variant="primary"
-          size="lg"
-          iconLeft={<Icon name={isListening ? 'Stop' : 'Play'} className="!w-10 !h-10 mb-1" />}
-          onClick={isListening ? stop : start}
-          className={`relative z-10 w-full h-full rounded-full flex flex-col items-center justify-center gap-2 transition-all duration-300 active:scale-95 cursor-pointer text-center select-none shadow-2xl !p-0 text-white ${gradientClasses}`}
-        >
-          <span className="font-bold tracking-wider text-base uppercase">{isListening ? 'Stop Broadcast' : 'Start Broadcast'}</span>
-        </Button>
+    <main className="min-h-screen bg-surface-primary text-text-primary flex flex-col items-center justify-center p-6 md:p-8 font-sans">
+      <div className="flex items-center justify-center mb-8">
+        <BroadcastButton
+          isListening={isListening}
+          volume={volume}
+          onToggle={isListening ? stop : start}
+        />
       </div>
 
       {/* Horizontal VU Meter */}
       <div className="w-full max-w-md mb-8">
-        <div className="flex justify-between items-center mb-1.5 text-xs text-slate-400 font-medium">
+        <div className="flex justify-between items-center mb-1.5 text-xs text-text-secondary font-medium">
           <span className="flex items-center gap-1">
-            <Icon name="Microphone" className={`w-3.5 h-3.5 ${isListening ? 'text-accent' : 'text-slate-500'}`} />
+            <Icon name="Microphone" className={`w-3.5 h-3.5 ${isListening ? 'text-accent' : 'text-text-muted'}`} />
             <span>Input Level</span>
           </span>
           <span className="font-mono">{isListening ? volume : 0}%</span>
         </div>
-        <div className="h-2.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden relative">
-          <div
-            className={`h-full transition-all duration-75 ease-out rounded-full ${
-              volume > 80
-                ? 'bg-gradient-to-r from-emerald-500 via-yellow-400 to-red-500'
-                : volume > 50
-                ? 'bg-gradient-to-r from-emerald-500 to-yellow-400'
-                : 'bg-emerald-500'
-            }`}
-            style={{ width: `${isListening ? volume : 0}%` }}
-          />
-        </div>
+        <VuMeter volume={isListening ? volume : 0} isActive={isListening} />
       </div>
 
       {error && (
-        <div className="w-full max-w-md mb-6 bg-red-900/30 border border-red-800 rounded-xl p-4 flex items-start gap-3">
-          <Icon name="ErrorCircle" className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-          <div className="text-sm">
-            <span className="font-semibold block mb-0.5 text-red-300">Broadcast Error</span>
-            <p className="text-red-200/90">{error}</p>
+        <Card
+          variant="error"
+          padding="lg"
+          className="w-full max-w-md mb-6 flex items-start gap-3"
+        >
+          <div role="alert" className="flex items-start gap-3">
+            <Icon name="ErrorCircle" className="w-5 h-5 text-status-error-bright shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <span className="font-semibold block mb-0.5 text-text-primary">Broadcast Error</span>
+              <p className="text-text-secondary">{error}</p>
+            </div>
           </div>
-        </div>
+        </Card>
       )}
 
       <div className="pt-4">

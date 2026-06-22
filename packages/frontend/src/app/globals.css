@@ -6,16 +6,16 @@
   --font-mono: var(--font-geist-mono);
 
   /* ── Surface colors ── */
-  --color-surface-primary: #0C0A09;
-  --color-surface-secondary: #1C1917;
-  --color-surface-tertiary: #292524;
-  --color-surface-border: #44403C;
-  --color-surface-muted: #57534E;
+  --color-surface-primary: #E8E0D4;
+  --color-surface-secondary: #F5F0EA;
+  --color-surface-tertiary: #E1D6C7;
+  --color-surface-border: #C5B49F;
+  --color-surface-muted: #D8CAB6;
 
   /* ── Text colors ── */
-  --color-text-primary: #FAFAF9;
-  --color-text-secondary: #A8A29E;
-  --color-text-muted: #78716C;
+  --color-text-primary: #3C1518;
+  --color-text-secondary: #5E272B;
+  --color-text-muted: #6B594B;
 
   /* ── Accent colors ── */
   --color-accent: #A3424A;
@@ -27,13 +27,13 @@
   /* ── Brand ── */
   --color-brand-maroon: #3C1518;
   --color-brand-cream: #E8E0D4;
-  --color-surface-glass: rgba(28, 25, 23, 0.6);
+  --color-surface-glass: rgba(245, 240, 234, 0.6);
 
   /* ── Status colors ── */
-  --color-status-live: #22c55e;
-  --color-status-live-bright: #4ade80;
-  --color-status-error: #ef4444;
-  --color-status-error-bright: #f87171;
+  --color-status-live: #15803d;
+  --color-status-live-bright: #22c55e;
+  --color-status-error: #b91c1c;
+  --color-status-error-bright: #ef4444;
   --color-status-error-dark: #7f1d1d;
 
   /* ── Overlay ── */

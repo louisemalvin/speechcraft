@@ -34,10 +34,10 @@ export function BroadcastButton({ isListening, volume, onToggle }: BroadcastButt
 
       <span
         className={`relative z-10 w-full h-full rounded-full flex items-center justify-center
-                    text-text-primary text-lg font-semibold transition-all duration-300
+                    text-lg font-semibold transition-all duration-300
                     ${isListening
-                      ? 'bg-linear-to-br from-accent-strong to-accent shadow-lg shadow-accent-strong/40'
-                      : 'bg-surface-muted'
+                      ? 'bg-linear-to-br from-accent-strong to-accent shadow-lg shadow-accent-strong/40 text-[#FAFAF9]'
+                      : 'bg-surface-muted text-text-primary'
                     }`}
       >
         {isListening ? 'Stop' : 'Broadcast'}

@@ -5,8 +5,10 @@ interface SegmentCardProps {
 
 export function SegmentCard({ translatedText, className = '' }: SegmentCardProps) {
   return (
-    <p className={`animate-fade-in-up text-text-primary ${className}`.trim()}>
-      {translatedText}
-    </p>
+    <div
+      className={`animate-fade-in-up bg-surface-secondary/80 border border-surface-border/50 border-l-4 border-l-accent rounded-xl p-4 shadow-sm text-text-primary transition-all ${className}`.trim()}
+    >
+      <p>{translatedText}</p>
+    </div>
   );
 }
